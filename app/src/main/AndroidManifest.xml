@@ -36,9 +36,6 @@
             android:label="@string/title_activity_activity_jawab_soal"
             android:parentActivityName=".DaftarSoalActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.tap.ilman.ta04.DaftarSoalActivity" />
         </activity>
     </application>
 

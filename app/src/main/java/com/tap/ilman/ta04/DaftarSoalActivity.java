@@ -1,5 +1,6 @@
 package com.tap.ilman.ta04;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -9,8 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -37,6 +42,8 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_daftarSoal);
 
+
+
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(new EqualSpaceItemDecoration(4));
@@ -45,7 +52,7 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
         items.add(new ItemDaftarSoal("", ""));
 
 
-        mAdapter = new DaftarSoalMenuAdapter(items);
+        mAdapter = new DaftarSoalMenuAdapter(items,key);
         mRecyclerView.setAdapter(mAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_daftar_soal);
@@ -60,8 +67,28 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
         fileLocation = this.getApplicationContext().getFilesDir().toString() + "/menu/" + key;
         pb = (ProgressBar) findViewById(R.id.debug_check_daftarSoal);
 
-        determinetoDownloadOrReadFile();
 
+        determinetoDownloadOrReadFile();
+        setTitlem();
+
+    }
+
+    private void setTitlem(){
+        StringBuilder sb = new StringBuilder();
+        int i=getIntent().getIntExtra("type",0);
+        String s = MainMenuAdapter.capitalize(key);
+        switch(i){
+            case 1:
+                sb.append(getString(R.string.judul_kelas_daftar_soal)).append(" ").append(s);
+                break;
+            case 2:
+                sb.append(getString(R.string.judul_kategori_daftar_soal)).append(" ").append(s);
+                break;
+            default:
+                sb.append(getString(R.string.judul_unknown_daftar_soal));
+                break;
+        }
+        setTitle(sb.toString());
     }
 
     private void determinetoDownloadOrReadFile() {
@@ -72,7 +99,6 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void tryToDownloadFile() {
@@ -87,14 +113,14 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
 
     private void loadQuickView() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        int maxQuickView = sharedPref.getInt("prefMaxQuickViewChar",50);
+        int maxQuickView = Integer.parseInt(sharedPref.getString("prefMaxQuickViewChar", "50"));
         String server = new StringBuilder(sharedPref
                 .getString("prefServer", "http://192.168.43.50:8080/api")).toString();
 
         Log.v("TEST", "loading brief part of daftar soal..server url: " + server);
-       new GetQuickViewOrDownloadFromURL(getApplicationContext(),pb
-               , items
-               , server, this,maxQuickView).execute();
+        new GetQuickViewOrDownloadFromURL(getApplicationContext(), pb
+                , items
+                , server, this, maxQuickView).execute();
         Log.v("TEST", "request go to separate thred..server url: " + server);
     }
 
@@ -103,7 +129,7 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
     public void doneDownoading() {
         items.clear();
         try {
-            Log.v("mapping","hope this doesnt took long time");
+            Log.v("mapping", "hope this doesnt took long time");
             items = AppUtils.jacksonObjectMapper.readValue(new File(fileLocation)
                     , new TypeReference<List<ItemDaftarSoal>>() {
                     });
@@ -121,11 +147,11 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
         Log.v("TEST", "there are " + items.size() + " elements in items  ");
         if (!items.isEmpty()) {
             Log.v("TEST", "notify update");
-            mAdapter = new DaftarSoalMenuAdapter(items);
+            mAdapter = new DaftarSoalMenuAdapter(items,key);
             mRecyclerView.setAdapter(mAdapter);
             mAdapter.notifyDataSetChanged();
 
-            Log.v("TEST","call load quickview");
+            Log.v("TEST", "call load quickview");
             loadQuickView();
         }
     }
@@ -134,5 +160,122 @@ public class DaftarSoalActivity extends AppCompatActivity implements DownloadAnd
     public void partiallyDone(int i) {
         //Log.v("TEST","on ui ..signal received updating number "+i+" item " +items.get(i));
         mAdapter.notifyItemChanged(i);
+    }
+}
+
+
+
+class DaftarSoalMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    RecyclerView rv;
+    List<ItemDaftarSoal> items;
+    String nextActivityBack;
+
+
+    public DaftarSoalMenuAdapter(List<ItemDaftarSoal> items, String key) {
+        this.items = items;
+        this.nextActivityBack = key;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        rv = recyclerView;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        RecyclerView.ViewHolder viewHolder;
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+
+        View v1 = inflater.inflate(R.layout.daftar_soal_item, viewGroup, false);
+        v1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!items.get(rv.getChildAdapterPosition(v)).get_id().isEmpty()) {
+                    Intent i = new Intent(rv.getContext(), ActivityJawabSoal.class)
+                            .putExtra("key", items.get(rv.getChildAdapterPosition(v)).get_id())
+                            .putExtra("back",nextActivityBack);
+                    rv.getContext().startActivity(i);
+                }
+            }
+        });
+        viewHolder = new ItemDaftarSoalVH(v1);
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ItemDaftarSoalVH vh = (ItemDaftarSoalVH) holder;
+        Log.v("Adapter", "onbind...updating an item at index " + position + "  " + items.get(position));
+        vh.QuickView.setText(items.get(position).content);
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+}
+
+class ItemDaftarSoalVH extends RecyclerView.ViewHolder {
+
+
+    public TextView QuickView;
+    public LinearLayout ll;
+
+    public ItemDaftarSoalVH(View itemView) {
+        super(itemView);
+        QuickView = (TextView) itemView.findViewById(R.id.quickview_daftar_soal);
+        ll = (LinearLayout) itemView.findViewById(R.id.cat_icons_daftar_soal);
+
+    }
+
+
+}
+
+class ItemDaftarSoal {
+    String _id;
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    String content="";
+
+    public ItemDaftarSoal() {
+    }
+
+    public ItemDaftarSoal(String _id, String content) {
+        this._id = _id;
+        this.content = content;    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder('[').append(_id).append(" , ").append(content).append(']').toString();
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
+
+    public String getContent() {
+        return this.content;
+    }
+}
+
+class ItemSoalQuick {
+    String s;
+
+    public String getS() {
+        return s;
+    }
+
+    public void setS(String s) {
+        this.s = s;
     }
 }

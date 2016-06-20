@@ -307,8 +307,8 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
     HttpURLConnection connection = null;
     int currentI;
 
-    public GetQuickViewOrDownloadFromURL(Context ctx, ProgressBar Status, List<ItemDaftarSoal> dsma, String server, viewQuickFile caller,int maxQuickViewLength) {
-        this.maxQuickViewLength= maxQuickViewLength;
+    public GetQuickViewOrDownloadFromURL(Context ctx, ProgressBar Status, List<ItemDaftarSoal> dsma, String server, viewQuickFile caller, int maxQuickViewLength) {
+        this.maxQuickViewLength = maxQuickViewLength;
         this.ctx = ctx;
         this.status = Status;
         this.dsma = dsma;
@@ -367,30 +367,28 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
         }
     }
 
-    private void readOne(int ids)  {
+    private void readOne(int ids) {
         StringBuilder sb = new StringBuilder();
         sb.setLength(0);
         try {
-
             if (AppUtils.checkFile(fileName.toString())) {
                 Log.v("downstream", " parsing json, the key is 's' only, file: " + fileName.toString());
 
                 sb.append(AppUtils.jacksonObjectMapper.readValue(new File(fileName.toString()), JsonNode.class)
                         .get(0).get("s").textValue());
 
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            Log.v("downstream", " Final : READDATA..jackson.. readOne " + sb.toString()+" length "+sb.length());
+            Log.v("downstream", " Final : READDATA..jackson.. readOne " + sb.toString() + " length " + sb.length());
             if (sb.length() == 0) {
                 Log.v("downstream", " Final : READDATA..set content to NoData");
                 dsma.get(ids).setContent("No Preview Data");
             } else if (sb.length() <= maxQuickViewLength) {
                 Log.v("downstream", " Final : READDATA..set content to " + sb.toString());
                 dsma.get(ids).setContent(sb.toString());
-            } else  {
+            } else {
                 Log.v("downstream", " Final : READDATA..set content to " + sb.toString());
                 sb.setLength(maxQuickViewLength);
                 sb.append("...");
@@ -412,7 +410,6 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
 
             try {
                 downloadOneIfNone();
-                readOne(i);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -426,9 +423,8 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
                 }
                 if (connection != null)
                     connection.disconnect();
-
             }
-
+            readOne(i);
             publishProgress(i, 1);
         }
     }

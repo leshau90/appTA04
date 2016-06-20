@@ -12,8 +12,8 @@
     <string name="pref_user_name_summary">Set your username</string>
     <string name="pref_user_profile">User Profile</string>
     <string name="pref_update_setting">Update Settings</string>
-    <string name="perf_title_server">debugging_server_target</string>
-    <string name="pref_server_api_desc">write url to api server</string>
+    <string name="perf_title_server">various settings</string>
+    <string name="pref_server_api_desc"> url to api server</string>
     <string name="pref_title_server_small">Api Server</string>
     <string name="perf_default_server">http://192.168.43.50:8080/api</string>
     <string name="kelas">Kelas</string>
@@ -21,4 +21,14 @@
     <string name="flush_file">Delete all data</string>
     <string name="action_flush">flush</string>
     <string name="title_activity_activity_jawab_soal">ActivityJawabSoal</string>
+    <string name="limits">limit</string>
+    <string name="pref_title_max_soal_per_category_small">Maksimal soal Per Kategori</string>
+    <string name="pref_max_soal_per_category_desc">set maksimal soal per kategori</string>
+    <string name="perf_limit_cat">25</string>
+    <string name="pref_title_max_char_view_small">maksimum karakter untuk preview soal</string>
+    <string name="pref_title_max_char_view_desc">set maksimal karater yang di tempilkan dalam preview soal</string>
+    <string name="perf_default_max_char_view">50</string>
+    <string name="judul_kelas_daftar_soal">Soal untuk kelas </string>
+    <string name="judul_kategori_daftar_soal">Soal tentang </string>
+    <string name="judul_unknown_daftar_soal">Pilihlah diantara Soal-soal dibawah ini</string>
 </resources>

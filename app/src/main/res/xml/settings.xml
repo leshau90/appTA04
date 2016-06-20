@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/flush_file" >
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/perf_title_server" >
         <EditTextPreference
             android:title="@string/pref_title_server_small"
@@ -12,6 +8,17 @@
             android:key="prefServer"
             android:defaultValue="@string/perf_default_server"/>
 
+        <EditTextPreference
+            android:title="@string/pref_title_max_soal_per_category_small"
+            android:summary="@string/pref_max_soal_per_category_desc"
+            android:key="prefLimit"
+            android:defaultValue="@string/perf_limit_cat"/>
+
+        <EditTextPreference
+            android:title="@string/pref_title_max_char_view_small"
+            android:summary="@string/pref_title_max_char_view_desc"
+            android:key="prefMaxQuickViewChar"
+            android:defaultValue="@string/perf_default_max_char_view"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_user_profile" >
@@ -36,5 +43,4 @@
             android:entryValues="@array/syncFrequencyValues"
             android:title="@string/pref_sync_frequency" />
     </PreferenceCategory>
-
 </PreferenceScreen>
