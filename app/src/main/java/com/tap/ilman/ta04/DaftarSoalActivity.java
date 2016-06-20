@@ -193,7 +193,7 @@ class DaftarSoalMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onClick(View v) {
                 if (!items.get(rv.getChildAdapterPosition(v)).get_id().isEmpty()) {
-                    Intent i = new Intent(rv.getContext(), ActivityJawabSoal.class)
+                    Intent i = new Intent(rv.getContext(), JawabSoalActivity.class)
                             .putExtra("key", items.get(rv.getChildAdapterPosition(v)).get_id())
                             .putExtra("back",nextActivityBack);
                     rv.getContext().startActivity(i);
@@ -230,8 +230,6 @@ class ItemDaftarSoalVH extends RecyclerView.ViewHolder {
         ll = (LinearLayout) itemView.findViewById(R.id.cat_icons_daftar_soal);
 
     }
-
-
 }
 
 class ItemDaftarSoal {
@@ -268,14 +266,3 @@ class ItemDaftarSoal {
     }
 }
 
-class ItemSoalQuick {
-    String s;
-
-    public String getS() {
-        return s;
-    }
-
-    public void setS(String s) {
-        this.s = s;
-    }
-}

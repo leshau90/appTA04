@@ -86,6 +86,13 @@ public class MainActivity extends AppCompatActivity implements DownloadAndRead {
             e.printStackTrace();
         }
     }
+    private void tryToDownloadFile() {
+
+        String server = PreferenceManager.getDefaultSharedPreferences(this).getString("prefServer", "http://192.168.43.50:8080/api") + "/main";
+        Log.v("TEST", "from perference setting the value is: " + server);
+        new DownloadFileFromURL(this, getApplicationContext(), pb, "/menu/main").execute(server);
+
+    }
 
 
     @Override
@@ -153,13 +160,7 @@ public class MainActivity extends AppCompatActivity implements DownloadAndRead {
         }
     }
 
-    private void tryToDownloadFile() {
 
-        String server = PreferenceManager.getDefaultSharedPreferences(this).getString("prefServer", "http://192.168.43.50:8080/api") + "/main";
-        Log.v("TEST", "from perference setting the value is: " + server);
-        new DownloadFileFromURL(this, getApplicationContext(), pb, "/menu/main").execute(server);
-
-    }
 //    private void showUserSettings() {
 //        SharedPreferences sharedPrefs = PreferenceManager
 //                .getDefaultSharedPreferences(this);
