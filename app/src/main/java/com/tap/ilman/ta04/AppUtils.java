@@ -45,21 +45,19 @@ public class AppUtils {
         jacksonObjectMapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
     }
 
-    static boolean isValidJSON(final File f) {
-        boolean valid = false;
-        try {
-            final JsonParser parser = jacksonObjectMapper.getFactory().createParser(f);
-            while (parser.nextToken() != null) {
-
-            }
-            valid = true;
-        } catch (JsonParseException jpe) {
-            jpe.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        return valid;
-    }
+//    static boolean isValidJSON(final File f) {
+//        boolean valid = false;
+//        try {
+//            final JsonParser parser = jacksonObjectMapper.getFactory().createParser(f);
+//            while (parser.nextToken() != null) {
+//
+//            }
+//            valid = true;
+//        } catch (Exceptione){
+//            e
+//        }
+//        return valid;
+//    }
 
     static void deleteAllFile(Context ctx) {
         File folder = new File(ctx.getFilesDir() + "/soal");
@@ -164,6 +162,10 @@ public class AppUtils {
         }
     }
 
+    public static float pixelsToSp(Context context, float px) {
+        float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+        return px/scaledDensity;
+    }
 }
 
 interface DownloadAndRead {
