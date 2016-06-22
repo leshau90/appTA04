@@ -33,4 +33,10 @@
     <string name="judul_unknown_daftar_soal">Pilihlah diantara Soal-soal dibawah ini</string>
     <string name="isi_jawabmu">tulis persamaan matematikanya</string>
     <string name="colorPrimaryVeryLight">#cefac0</string>
+    <string name="colorPrimary"> #4caf50</string>
+    <string name="colorPrimaryDark"> #388e3c</string>
+    <string name="colorPrimaryLight"> #adff2f</string>
+    <string name="colorPrimaryShade"> #d1fdcc</string>
+    <string name="colorAccent">#ff5722</string>
+    <string name="colorAccentLight">#FFFF00</string>
 </resources>

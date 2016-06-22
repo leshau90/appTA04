@@ -6,6 +6,5 @@
     <color name="colorPrimaryVeryLight"> #cefac0</color>
     <color name="colorPrimaryShade"> #d1fdcc</color>
     <color name="colorAccent">#ff5722</color>
-
     <color name="colorAccentLight">#FFFF00</color>
 </resources>

@@ -135,39 +135,39 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
         switch (i) {
 
             case BACKSPACE:
-                if (answerBox.getText().length()==0) break;
+                if (answerBox.getText().length() == 0) break;
                 if (0 == answerBox.getSelectionEnd()) {
                     Log.v("TEST", "no op because selection at index 0 equals selectionEnd " + answerBox.getSelectionEnd());
                     break;
                 } else {
-                    Log.v("TEST", "will be deleting at: " +answerBox.getSelectionStart() +" to "+answerBox.getSelectionEnd());
-                    answerBox.getText().delete(answerBox.getSelectionStart()-1,answerBox.getSelectionStart());
+                    Log.v("TEST", "will be deleting at: " + answerBox.getSelectionStart() + " to " + answerBox.getSelectionEnd());
+                    answerBox.getText().delete(answerBox.getSelectionStart() - 1, answerBox.getSelectionStart());
                 }
                 break;
             case DEL:
-                if (answerBox.getText().length()==0) break;
+                if (answerBox.getText().length() == 0) break;
                 if (answerBox.getText().length() == answerBox.getSelectionEnd()) {
                     Log.v("TEST", "no op, because textlength "
                             + answerBox.getText().length() + " equals selectionEnd " + answerBox.getSelectionEnd());
                     break;
                 } else {
-                    Log.v("TEST", "will be deleting at: " +answerBox.getSelectionStart() +" to "+answerBox.getSelectionEnd());
-                    answerBox.getText().delete(answerBox.getSelectionStart(),answerBox.getSelectionStart()+1);
+                    Log.v("TEST", "will be deleting at: " + answerBox.getSelectionStart() + " to " + answerBox.getSelectionEnd());
+                    answerBox.getText().delete(answerBox.getSelectionStart(), answerBox.getSelectionStart() + 1);
                 }
                 break;
             case TOLEFT:
-                if (answerBox.getText().length()==0) break;
-                if (answerBox.getSelectionStart()==0) break;
-                if (answerBox.getSelectionStart() >0)
+                if (answerBox.getText().length() == 0) break;
+                if (answerBox.getSelectionStart() == 0) break;
+                if (answerBox.getSelectionStart() > 0)
                     answerBox.setSelection(answerBox.getSelectionStart() - 1);
                 break;
             case TORIGHT:
-                if (answerBox.getText().length()==0) break;
+                if (answerBox.getText().length() == 0) break;
                 if (answerBox.getText().length() > answerBox.getSelectionEnd())
                     answerBox.setSelection(answerBox.getSelectionStart() + 1);
                 break;
             case CLEAR:
-                if (answerBox.getText().length()==0) break;
+                if (answerBox.getText().length() == 0) break;
                 answerBox.setText("");
                 break;
             default:
@@ -286,6 +286,17 @@ class PadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case CLEAR:
                 vh.btn.setBackgroundColor(Color.parseColor(ctx.getString(R.string.colorPrimaryVeryLight)));
                 break;
+            case BUKAKURUNG:
+            case TUTUPKURUNG:
+            case SAMADENGAN:
+            case TAMBAH:
+            case KURANG:
+            case BAGI:
+            case PER:
+            case KALI:
+            case TITIK:
+            case KOMA:
+                vh.btn.setBackgroundColor(Color.parseColor(ctx.getString(R.string.colorPrimaryShade)));
             default:
                 break;
         }
@@ -312,6 +323,11 @@ enum PadItem {
     ENAM("6", "6"),
     TUJUH("7", "7"),
     DELAPAN("8", "8"),
+    SEMBILAN("9", "9"),
+    KOSONG("0", "0"),
+
+
+
     BUKAKURUNG("(", "("),
     TUTUPKURUNG(")", ")"),
     SAMADENGAN("=", "="),
@@ -319,8 +335,9 @@ enum PadItem {
     KURANG("-", "-"),
     BAGI("\u00f7", ":"),
     PER("/", "/"),
-    KALI("\u00d7", ")"),
-
+    KALI("\u00d7", "\u00d7"),
+    TITIK(".", "."),
+    KOMA(",", ","),
     CLEAR("C", "");
 
 //    static String specialpads[] = {
