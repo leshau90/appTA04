@@ -7,7 +7,7 @@ public abstract class Term {
 	@Override
 	abstract public String toString();
 
-	abstract public String printTree(int lvl);
+	abstract public String printTree(int spacelvl);
 
 	@Override
 	public int hashCode() {
@@ -127,8 +127,8 @@ class SimpleTerm extends Term {
 	}
 
 	@Override
-	public String printTree(int lvl) {
-		return MantikProcessor.printBranch(lvl) + Float.toString(this.value)
+	public String printTree(int spacelvl) {
+		return MantikProcessor.printBranch(spacelvl) + Float.toString(this.value)
 				+ " " + this.getToken().name() + "\n";
 	}
 
@@ -157,7 +157,7 @@ class SimpleTerm extends Term {
 			}
 
 			else if (samaKategori) {
-				if (this.getValueLoc().getKategori() != Kategori.untyped
+				if (this.getValueLoc().getKategori() != Kategori.unknown
 						|| this.getValueLoc().getKategori() != Kategori.unknown) {
 					if (this.getValueLoc().getKategori() == Kategori.jmd) {
 						if (this.getValueLoc().bijectiveEqualJMD(

@@ -182,7 +182,55 @@ class TypedLexeme extends Lexeme {
     private HashSet<SubOperand> JMD = null;
     private SubOperand TempJ = null;
     private int NegLocation;
+    private Lexeme AkarLoc;
+    private Lexeme PangkatLoc;
+
+    public Satuan getSecondSatuan() {
+        return secondSatuan;
+    }
+
+    public void setSecondSatuan(Satuan secondSatuan) {
+        this.secondSatuan = secondSatuan;
+    }
+
+    private Satuan secondSatuan;
+
+    public Lexeme getAkarLoc() {
+        return AkarLoc;
+    }
+
+    public void setAkarLoc(Lexeme akarLoc) {
+        AkarLoc = akarLoc;
+    }
+
+    public Lexeme getPangkatLoc() {
+        return PangkatLoc;
+    }
+
+    public void setPangkatLoc(Lexeme pangkatLoc) {
+        PangkatLoc = pangkatLoc;
+    }
+
+    public int getPerTypeLoc() {
+        return perTypeLoc;
+    }
+
+    public void setPerTypeLoc(int perTyoeLoc) {
+        this.perTypeLoc = perTyoeLoc;
+    }
+
+    private int perTypeLoc;
     private Lexeme typeloc;
+
+    public Lexeme getSecondTypeLoc() {
+        return secondTypeLoc;
+    }
+
+    public void setSecondTypeLoc(Lexeme secondTypeLoc) {
+        this.secondTypeLoc = secondTypeLoc;
+    }
+
+    private Lexeme secondTypeLoc;
 
     public void setTypeLoc(Lexeme l) {
         typeloc = l;
@@ -243,14 +291,30 @@ class TypedLexeme extends Lexeme {
             s.append("\n");
         }
 
-        return s.insert(0, this.getEnd()).insert(0, " to: ").insert(0, this.getStart())
-                .insert(0, "Merged index:")
-                .append(" satuan: ")
-                .append(this.getSatuan())
-                .append(" kategori: ")
-                .append(this.getKategori())
-                .append(((!isNegative) ? " POSITIVE" : " NEGATIVE" + "typeLoc: "))
-                .append(this.getTypeLoc()).toString();
+        s.insert(0, this.getEnd()).insert(0, " to: ").insert(0, this.getStart())
+                .insert(0, "Merged index: ").append(" negativity ");
+
+        if (satuan != null || satuan != Satuan.unknown) {
+            s.append(" satuan: ").append(this.getSatuan()).append(" ");
+            if (secondSatuan != null) {
+                s.append(" per-sign at: ").append(this.getPerTypeLoc())
+                        .append(" ").append( "secondSatuan : ")
+                        .append(this.secondSatuan).append(' ');
+            }
+        }
+
+        if (kategori != null
+                || kategori != Kategori.unknown) {
+            s.append(" kategori: ")
+                    .append(this.getKategori()).append(" ");
+
+        }
+        if (isNegative) s.append(" NEGATIVE  negative-sign index at: ")
+                .append(this.getNegLocation()).append(" ");
+        else s.append(" POSITIVE ");
+        if (AkarLoc != null) s.append(" ADA Akar: ").append(this.getAkarLoc()).append(' ');
+        if (PangkatLoc != null) s.append(" ADA Pangkat ").append(this.getPangkatLoc()).append(' ');
+        return s.toString();
 //        return "Merged index:"
 //                + this.getStart()
 //                + " to: "
@@ -271,9 +335,9 @@ class TypedLexeme extends Lexeme {
 
         boolean b = JMD.add(l);
         if (b)
-            System.out.println("..first subOperand " + l + "is inserted");
+            System.out.println("TypedLexeme.pushJMDLexeme ..first subOperand " + l + "is inserted");
         else
-            System.out.println("..first subOperand " + l + "is NOT inserted");
+            System.out.println("TypedLexeme.pushJMDLexeme ..first subOperand " + l + "is NOT inserted");
         return b;
     }
 
@@ -305,10 +369,10 @@ class TypedLexeme extends Lexeme {
     public boolean conversionJMDEqual(TypedLexeme b) {
         float x = 0, y = 0;
         for (SubOperand so : JMD) {
-            x = +Converter.convertToSeconds(so.getSatuan(), so.getValue());
+            x = +Converter.convertToHari(so.getSatuan(), so.getValue());
         }
         for (SubOperand so : b.JMD) {
-            y = +Converter.convertToSeconds(so.getSatuan(), so.getValue());
+            y = +Converter.convertToHari(so.getSatuan(), so.getValue());
         }
 
         if (x == y)
@@ -318,25 +382,9 @@ class TypedLexeme extends Lexeme {
 
     }
 
-    ;
-
-    public boolean conversionEqual(TypedLexeme b) {
-        float x = 0, y = 0;
-
-
-        if (x == y)
-            return true;
-        else
-            return false;
-
-    }
-
-    ;
 
     public TypedLexeme(Token t, int s) {
         super(t, s);
-
-        // TODO Auto-generated constructor stub
     }
 
     public boolean isNegative() {

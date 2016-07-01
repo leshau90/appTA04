@@ -2,7 +2,9 @@ package com.tap.ilman.ta04;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -21,12 +25,18 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.tap.ilman.ta04.util.Analyze;
+import com.tap.ilman.ta04.util.PExpr;
+import com.tap.ilman.ta04.util.Param;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class JawabSoalActivity extends AppCompatActivity implements DownloadAndRead, clickedPad {
+public class JawabSoalActivity extends AppCompatActivity implements DownloadAndRead, clickedPad, ParseProcess {
 
     private ProgressBar pb;
     private DetailSoal soal;
@@ -35,6 +45,7 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
     private EditText answerBox;
     private TextView soalbox;
     private String fileLocation;
+    private PExpr[] keys;
 
 
     @Override
@@ -67,6 +78,22 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
         fileLocation = getApplicationContext().getFilesDir() + "/soal/" + getIntent().getStringExtra("key");
         // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        soalbox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Analyze.checkSemantic(new Param().setInput(answerBox.getText().toString()));
+            }
+        });
 
         initialState();
         determineFiletoBeRead();
@@ -76,12 +103,13 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
     private void initialState() {
 
         soalbox.setText("");
+        answerBox.setEnabled(false);
         pb.setMax(100);
         mrv.setEnabled(false);
-        //   answerBox.setText("");
         answerBox.setHint(getString(R.string.isi_jawabmu));
 
     }
+
 
     private void determineFiletoBeRead() {
         try {
@@ -101,6 +129,20 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
         Log.v("TEST", "download file if it isnt there: " + server);
         new DownloadFileFromURL(this, getApplicationContext(), pb, "/menu/main").execute(server);
     }
+
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            mrv.setLayoutManager(new GridLayoutManager(this,6));
+//            mrv.invalidate();
+//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+//            mrv.setLayoutManager(new GridLayoutManager(this,4));
+//            mrv.invalidate();
+//        }
+//    }
 
     @Override
     public void onBackPressed() {
@@ -123,8 +165,12 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
                 initialState();
             } else {
                 soal = a[0];
+                //Log.v("PARSE",soal.toString());
                 soalbox.setText(soal.s);
-                mrv.setEnabled(true);
+                // System.out.println("JawabSoalActivity.doneDownoading: soal.k: "+Arrays.toString(soal.k));
+                Param[] p = Param.getKeyAsParameterArray(soal.k);
+                //System.out.println(Arrays.toString(p));
+                new ParseKeys(keys, pb, this).execute(p);
             }
         }
     }
@@ -192,13 +238,15 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
 
         return a;
     }
+
+    @Override
+    public void doneParsing() {
+        Log.v("TEST", "Parsing Seem Success , enabling necessary ui");
+        answerBox.setEnabled(true);
+        mrv.setEnabled(true);
+    }
 }
 
-
-class a {
-    String val;
-    String tval;
-}
 
 class padviewHolder extends RecyclerView.ViewHolder {
     Button btn;
@@ -212,7 +260,7 @@ class padviewHolder extends RecyclerView.ViewHolder {
 class DetailSoal {
     //POJO
     String s;
-    String[] c; //
+    String[] c; //categories
     String[] k; //keys
     boolean spd = false; // special denumerator on factor term
     boolean igm = false; // ignore metrics / types in operand
@@ -222,6 +270,13 @@ class DetailSoal {
     public DetailSoal() {
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder("isi soal: ").append(s).append("\nkategori tags:").append(Arrays.toString(c))
+                .append("\nkunci: ").append(Arrays.toString(k)).append(' ')
+                .append(spd).append(' ').append(igm).append(' ').append(rm).toString();
+
+    }
 }
 
 interface clickedPad {
@@ -264,7 +319,7 @@ class PadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         padviewHolder vh = (padviewHolder) holder;
         final float fc = vh.btn.getTextSize() / xy;
         final PadItem pd = padData.get(position);
@@ -278,14 +333,18 @@ class PadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
         switch (pd) {
             case BACKSPACE:
-                vh.btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, fc * 0.5f);
+                System.out.println("resizing this BACKSPACE");
+                vh.btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, fc * 0.4f);
             case DEL:
-                vh.btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, fc * 0.75f);
+                System.out.println("resizing this DEL");
+                vh.btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, fc * 0.65f);
             case TOLEFT:
             case TORIGHT:
             case CLEAR:
+                System.out.println("coloring " + pd + " with primary very light");
                 vh.btn.setBackgroundColor(Color.parseColor(ctx.getString(R.string.colorPrimaryVeryLight)));
                 break;
+
             case BUKAKURUNG:
             case TUTUPKURUNG:
             case SAMADENGAN:
@@ -296,8 +355,39 @@ class PadAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case KALI:
             case TITIK:
             case KOMA:
+            case AKAR:
+            case DERAJATC:
+            case DERAJATF:
+            case DERAJATK:
+            case DERAJATR:
+                System.out.println("coloring " + pd + " with accent light");
+                vh.btn.setBackgroundColor(Color.parseColor(ctx.getString(R.string.colorAccentLight)));
+                break;
+            case PANGKATSATU:
+            case PANGKATDUA:
+            case PANGKATTIGA:
+            case PANGKATEMPAT:
+            case PANGKATLIMA:
+            case PANGKATENAM:
+            case PANGKATTUJUH:
+            case PANGKATDELAPAN:
+            case PANGKATSEMBILAN:
+            case PANGKATNOL:
+                System.out.println("coloring " + pd + " with primary shade");
                 vh.btn.setBackgroundColor(Color.parseColor(ctx.getString(R.string.colorPrimaryShade)));
-            default:
+                break;
+            case SATU:
+            case DUA:
+            case TIGA:
+            case EMPAT:
+            case LIMA:
+            case ENAM:
+            case TUJUH:
+            case DELAPAN:
+            case SEMBILAN:
+            case KOSONG:
+                System.out.println("coloring " + pd + " with primary light");
+                vh.btn.setBackgroundColor(Color.parseColor(ctx.getString(R.string.colorPrimaryLight)));
                 break;
         }
     }
@@ -326,19 +416,37 @@ enum PadItem {
     SEMBILAN("9", "9"),
     KOSONG("0", "0"),
 
-
-
     BUKAKURUNG("(", "("),
     TUTUPKURUNG(")", ")"),
     SAMADENGAN("=", "="),
     TAMBAH("+", "+"),
     KURANG("-", "-"),
-    BAGI("\u00f7", ":"),
+    BAGI("\u00f7", "÷"),
     PER("/", "/"),
     KALI("\u00d7", "\u00d7"),
     TITIK(".", "."),
     KOMA(",", ","),
+    AKAR("\u221a", "\u221a"),
+
+    DERAJATC("...\u00b0C", "\u00b0C"),
+    DERAJATF("...\u00b0F", "\u00b0F"),
+    DERAJATK("...\u00b0K", "\u00b0K"),
+    DERAJATR("...\u00b0R", "\u00b0R"),
+
+    PANGKATSATU("...\u00b9", "\u00b9"),
+    PANGKATDUA("...\u00b2", "\u00b2"),
+    PANGKATTIGA("...\u00b3", "\u00b3"),
+    PANGKATEMPAT("...\u2074", "\u2074"),
+    PANGKATLIMA("...\u2075", "\u2075"),
+    PANGKATENAM("...\u2076", "\u2076"),
+    PANGKATTUJUH("...\u2077", "\u2077"),
+    PANGKATDELAPAN("...\u2078", "\u2078"),
+    PANGKATSEMBILAN("...\u2079", "\u2079"),
+    PANGKATNOL("...\u2070", "\u2070"),
+
+
     CLEAR("C", "");
+
 
 //    static String specialpads[] = {
 //            "\u21e6", "\u21e8", "\u3008", "\u3009", "C",
@@ -377,5 +485,53 @@ enum PadItem {
         return new StringBuilder('[').append(shownVal).append(';')
                 .append(printedVal).append(' ')
                 .toString();
+    }
+}
+
+
+interface ParseProcess {
+    void doneParsing();
+}
+
+
+class ParseKeys extends AsyncTask<Param, Void, PExpr[]> {
+    private PExpr[] keys;
+    ProgressBar pb;
+    ParseProcess caller;
+
+    public ParseKeys(PExpr[] keys, ProgressBar pb, ParseProcess parseProcess) {
+        this.keys = keys;
+        this.pb = pb;
+        this.caller = parseProcess;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        pb.setIndeterminate(true);
+        super.onPreExecute();
+    }
+
+    @Override
+    protected PExpr[] doInBackground(Param... params) {
+        boolean error = false;
+        try {
+            Analyze.getKeys(params);
+        } catch (Exception e) {
+            e.printStackTrace();
+            error = true;
+        } finally {
+            if (error) {
+                System.out.println("PARSING ERROR, Source code may be wrong");
+                return null;
+            } else
+                return keys;
+        }
+    }
+
+    @Override
+    protected void onPostExecute(PExpr[] pExprs) {
+        super.onPostExecute(pExprs);
+        pb.setIndeterminate(false);
+        caller.doneParsing();
     }
 }

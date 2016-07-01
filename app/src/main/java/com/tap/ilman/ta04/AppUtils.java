@@ -160,7 +160,7 @@ public class AppUtils {
             Log.v("TEST", "APPUTIL: checkSoalFile, no such file " + file.getAbsolutePath().toString());
             return false;
         }
-    }   
+    }
 
 //    public static float pixelsToSp(Context context, float px) {
 //        float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
@@ -336,6 +336,7 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
     private void downloadOneIfNone() throws Exception {
 
         if (!AppUtils.checkFile(fileName.toString())) {
+            System.out.println("GetQuickViewOrDownloadFromURL.downloadOneIfNone...no file to be read..so this: " + fileName.toString() + " will be downloaded");
             URL url = new URL(server.toString());
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
@@ -367,19 +368,20 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
                 }
             }
         }
+        System.out.println("GetQuickViewOrDownloadFromURL.downloadOneIfNone file already there call jackson to read ");
     }
 
     private void readOne(int ids) {
         StringBuilder sb = new StringBuilder();
         sb.setLength(0);
         try {
-            if (AppUtils.checkFile(fileName.toString())) {
-                Log.v("downstream", " parsing json, the key is 's' only, file: " + fileName.toString());
 
-                sb.append(AppUtils.jacksonObjectMapper.readValue(new File(fileName.toString()), JsonNode.class)
-                        .get(0).get("s").textValue());
+            System.out.println("GetQuickViewOrDownloadFromURL.readOne ...reading ");
+            Log.v("downstream", " parsing json, the key is 's' only, file: " + fileName.toString());
+            sb.append(AppUtils.jacksonObjectMapper.readValue(new File(fileName.toString()), JsonNode.class)
+                    .get(0).get("s").textValue());
 
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -447,7 +449,6 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
         switch (values[1]) {
             case 0:
                 status.setProgress(values[0]);
-
                 Log.v("downstream", "onProgressUpdate... setProggresbar" + values[0]);
                 break;
             case 1:
@@ -458,8 +459,6 @@ class GetQuickViewOrDownloadFromURL extends AsyncTask<Void, Integer, Void> {
                 Log.v("downstream", "onProgressUpdate... this shouldn't happen... no integer code");
                 break;
         }
-
-
     }
 
     @Override

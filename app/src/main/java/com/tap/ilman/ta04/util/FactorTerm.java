@@ -84,13 +84,13 @@ class FactorTerm extends Term {
 	}
 
 	@Override
-	public String printTree(int lvl) {
-		int lvl2 = lvl + 1;
+	public String printTree(int spacelvl) {
+		int lvl2 = spacelvl + 1;
 
 		StringBuilder sb = new StringBuilder();
 
 		for (Term t : factors) {
-			sb.append(MantikProcessor.printBranch(lvl)).append(
+			sb.append(MantikProcessor.printBranch(spacelvl)).append(
 					t.printTree(lvl2));
 		}
 		return sb.toString();

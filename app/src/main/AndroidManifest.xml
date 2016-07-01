@@ -35,6 +35,7 @@
             android:name=".JawabSoalActivity"
             android:label="@string/title_activity_activity_jawab_soal"
             android:parentActivityName=".DaftarSoalActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
