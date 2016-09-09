@@ -2,7 +2,6 @@ package com.tap.ilman.ta04;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,7 +30,6 @@ import com.tap.ilman.ta04.util.Param;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -152,25 +150,26 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
 
     @Override
     public void doneDownoading() {
-        DetailSoal[] a = new DetailSoal[0];
+        DetailSoal[] dataSoalfromJSON = new DetailSoal[0];
         try {
             Log.v("TEST", "JawabSoal: doneDownloading: try to construct DetailSoal POJO using jackson, file Location is " + fileLocation);
-            a = AppUtils.jacksonObjectMapper.readValue(new File(fileLocation), DetailSoal[].class);
+            dataSoalfromJSON = AppUtils.jacksonObjectMapper.readValue(new File(fileLocation), DetailSoal[].class);
         } catch (IOException e) {
             Log.v("TEST", "CATCH BLOCK:  Detail is empty, seems like the download or file reading is failed ");
             e.printStackTrace();
         } finally {
-            if (a[0].s.isEmpty() || a[0].k[0].isEmpty()) {
-                Log.v("TEST", "FINAL BLOCK:  Detail (tak ada soal ataupun kunci) is empty, seems like the download or file writing is failed, reverting to initial state ");
+            if (dataSoalfromJSON[0].s.isEmpty() || dataSoalfromJSON[0].k[0].isEmpty()) {
+                Log.v("TEST", "FINAL BLOCK:  Detail (tidak ada soal ataupun kunci pada soal ini), seems like the download or file writing is failed, reverting to initial state ");
                 initialState();
             } else {
-                soal = a[0];
+                soal = dataSoalfromJSON[0];
                 //Log.v("PARSE",soal.toString());
                 soalbox.setText(soal.s);
                 // System.out.println("JawabSoalActivity.doneDownoading: soal.k: "+Arrays.toString(soal.k));
                 Param[] p = Param.getKeyAsParameterArray(soal.k);
                 //System.out.println(Arrays.toString(p));
-                new ParseKeys(keys, pb, this).execute(p);
+                new ParsedKeys(p, pb, this).execute();
+
             }
         }
     }
@@ -240,8 +239,19 @@ public class JawabSoalActivity extends AppCompatActivity implements DownloadAndR
     }
 
     @Override
-    public void doneParsing() {
+    public void doneParsing(PExpr[] exprs) {
         Log.v("TEST", "Parsing Seem Success , enabling necessary ui");
+        System.out.println("done parsing keys..lets write the tree: ");
+        keys = exprs;
+
+        if (keys != null) {
+            System.out.println("JawabSoalActivity.doneParsing: there are: " + exprs.length + " compiled keys");
+            for (PExpr exp : keys) {
+                exp.printTree(1);
+            }
+        } else {
+            System.out.println("JawabSoalActivity.doneParsing..no keys..code still wrong");
+        }
         answerBox.setEnabled(true);
         mrv.setEnabled(true);
     }
@@ -490,19 +500,21 @@ enum PadItem {
 
 
 interface ParseProcess {
-    void doneParsing();
+    void doneParsing(PExpr[] exprs);
 }
 
 
-class ParseKeys extends AsyncTask<Param, Void, PExpr[]> {
+class ParsedKeys extends AsyncTask<Void, Void, Void> {
+    private Param[] stringKeys;
     private PExpr[] keys;
     ProgressBar pb;
     ParseProcess caller;
 
-    public ParseKeys(PExpr[] keys, ProgressBar pb, ParseProcess parseProcess) {
-        this.keys = keys;
+    public ParsedKeys(Param[] stringKeys, ProgressBar pb, ParseProcess parseProcess) {
+        this.stringKeys = stringKeys;
         this.pb = pb;
         this.caller = parseProcess;
+
     }
 
     @Override
@@ -512,26 +524,27 @@ class ParseKeys extends AsyncTask<Param, Void, PExpr[]> {
     }
 
     @Override
-    protected PExpr[] doInBackground(Param... params) {
+    protected Void doInBackground(Void... voids) {
         boolean error = false;
         try {
-            Analyze.getKeys(params);
+            keys = Analyze.getKeys(stringKeys);
         } catch (Exception e) {
             e.printStackTrace();
             error = true;
         } finally {
             if (error) {
-                System.out.println("PARSING ERROR, Source code may be wrong");
-                return null;
-            } else
-                return keys;
+                System.out.println("parseprocess: PARSING ERROR, Source code may be wrong");
+            } else {
+                System.out.println("parseprocess: PARSING DONE, Result is array of PExpr");
+            }
         }
+        return null;
     }
 
     @Override
-    protected void onPostExecute(PExpr[] pExprs) {
-        super.onPostExecute(pExprs);
+    protected void onPostExecute(Void v) {
+        super.onPostExecute(null);
         pb.setIndeterminate(false);
-        caller.doneParsing();
+        caller.doneParsing(keys);
     }
 }

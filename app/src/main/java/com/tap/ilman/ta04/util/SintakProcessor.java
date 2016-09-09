@@ -39,7 +39,7 @@ public class SintakProcessor {
     }
 
     static SemanticParam startAnalysisPT2(Queue<Lexeme> lexTable, Param p) {
-        System.out.println("=============SEMANTIC====================");
+        System.out.println("=============Syntactic====================");
         // mantikTable
         Queue<Lexeme> m = new LinkedList<Lexeme>();
         // start FSM
@@ -75,13 +75,13 @@ public class SintakProcessor {
         }
 
         Queue<Lexeme> m2 =  LexUtility.lexPrinterMerged(m, p);
-        System.out.println("========================================================");
-        System.out.println("DONE checking SYNTAX last state: "+state );
+        System.out.println("\n\n===============================================");
+        System.out.println("Syntactic: Result: DONE checking SYNTAX last state: "+state );
         if (!isTrueEnd(state) || state == SSM.SYNTAX_ERROR) {
-            System.out.println(" " + p.input + " sintak masih SALAH " + em);
+            System.out.println("Syntactic: " + p.input + " sintak masih SALAH " + em);
             return new SemanticParam(p, false, m2, em);
         } else {
-            System.out.println("sintak BENAR mulai analisa semantik");
+            System.out.println("Syntactic: sintak BENAR mulai analisa semantik");
             LexUtility.lexPrinterMerged(m, p);
 
             return new SemanticParam(p, true, m2, em);
@@ -108,6 +108,7 @@ public class SintakProcessor {
             case SYNTAX_FINAL_UNTYPED_OPERAND_AFTER_COMMA:
             case SYNTAX_FINAL_UNTYPED_OPERAND_AFTER_DOT:
             case SYNTAX_FINAL_AFTERTYPE:
+            case SYNTAX_FINAL_AFTERTYPE_SECOND:
             case SYNTAX_FINAL_RP_OPERAND:
             case SYNTAX_FINAL_RP_OPERAND_AFTER_COMMA:
             case SYNTAX_FINAL_RP_OPERAND_AFTER_DOT:

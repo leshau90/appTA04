@@ -68,7 +68,7 @@ class Lexeme implements asSemanticToken {
 
     public String toString() {
         StringBuilder sb = new StringBuilder().append(this.getToken())
-                .append(" index is: ").append(this.getStart()).append(" to ")
+                .append(" at: ").append(this.getStart()).append(" to ")
                 .append(this.getEnd());
         return sb.toString();
     }
@@ -78,6 +78,9 @@ class SubOperand {
     private Satuan satuan;
     private int s, e;
     private float value;
+    // storing reference to type location on input string
+    private Lexeme typeloc;
+
 
     public float getValue() {
 
@@ -89,8 +92,6 @@ class SubOperand {
 
     }
 
-    // storing reference to type location on input string
-    private Lexeme typeloc;
 
     public SubOperand setTypeLoc(Lexeme l) {
         typeloc = l;
@@ -165,8 +166,8 @@ class SubOperand {
 
     @Override
     public String toString() {
-        return new StringBuilder("SubOperand :[satuan=").append(satuan).append(", s=")
-                .append(s).append(", e=")
+        return new StringBuilder("[satuan=").append(satuan).append(", s:")
+                .append(s).append(", e:")
                 .append(e).append("]")
                 .toString();
         //return "SubOperand :[satuan=" + satuan + ", s=" + s + ", e=" + e + "]";
@@ -284,36 +285,37 @@ class TypedLexeme extends Lexeme {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
+
+        s.append("TypedLexeme: ").append(this.getStart()).append(" to ").append( this.getEnd()).append(' ');
         if (this.JMD != null) {
+            s.append("suboperand: ");
             for (SubOperand b : JMD) {
-                s.append("\n--").append(b);
+                s.append(' ').append(b);
             }
-            s.append("\n");
+            s.append(' ');
         }
 
-        s.insert(0, this.getEnd()).insert(0, " to: ").insert(0, this.getStart())
-                .insert(0, "Merged index: ").append(" negativity ");
+
 
         if (satuan != null || satuan != Satuan.unknown) {
             s.append(" satuan: ").append(this.getSatuan()).append(" ");
             if (secondSatuan != null) {
                 s.append(" per-sign at: ").append(this.getPerTypeLoc())
-                        .append(" ").append( "secondSatuan : ")
+                        .append(" ").append("secondSatuan : ")
                         .append(this.secondSatuan).append(' ');
             }
         }
 
         if (kategori != null
                 || kategori != Kategori.unknown) {
-            s.append(" kategori: ")
-                    .append(this.getKategori()).append(" ");
+            s.append(" kategori: ").append(this.getKategori()).append(" ");
 
         }
-        if (isNegative) s.append(" NEGATIVE  negative-sign index at: ")
+        if (isNegative) s.append(" NEGATIVE  sign at: ")
                 .append(this.getNegLocation()).append(" ");
         else s.append(" POSITIVE ");
-        if (AkarLoc != null) s.append(" ADA Akar: ").append(this.getAkarLoc()).append(' ');
-        if (PangkatLoc != null) s.append(" ADA Pangkat ").append(this.getPangkatLoc()).append(' ');
+        if (AkarLoc != null) s.append(" Akar: ").append(this.getAkarLoc()).append(' ');
+        if (PangkatLoc != null) s.append(" Pangkat: ").append(this.getPangkatLoc()).append(' ');
         return s.toString();
 //        return "Merged index:"
 //                + this.getStart()
@@ -383,9 +385,9 @@ class TypedLexeme extends Lexeme {
     }
 
 
-    public TypedLexeme(Token t, int s) {
-        super(t, s);
-    }
+//    public TypedLexeme(Token t, int s) {
+//        super(t, s);
+//    }
 
     public boolean isNegative() {
         return isNegative;

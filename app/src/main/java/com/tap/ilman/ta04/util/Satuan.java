@@ -15,6 +15,8 @@ enum Satuan {
 
     mg, cg, dg, g, dag, hg, kg, ons, pon, ton, kuintal,
 
+    celcius, fahrenheit, kelvin, reamur,
+
     // pretypes
     rp, rupiah,
 
@@ -55,8 +57,17 @@ enum Satuan {
                     return mm2;
                 case "mm\u00B3":
                     return mm3;
+                case "\u00B0C":
+                    return celcius;
+                case "\u00B0F":
+                    return fahrenheit;
+                case "\u00B0K":
+                    return kelvin;
+                case "\u00B0R":
+                    return reamur;
 
                 default:
+                    System.out.println("Satuan.fromString: syntactic: satuan dari input "+s+" tidak dikenali");
                     return Satuan.unknown;
             }
 
@@ -67,13 +78,15 @@ enum Satuan {
 
     public static boolean isPangkatOnly(String s) {
         char c;
+        System.out.println("Syntactic: Satuan.isPangkatOnly: checking setiap charcter yang dimasukkan adalah pangkat");
         for (int i = 0; i < s.length(); i++) {
             c = s.charAt(i);
             //zero first
             if (s.length() > 1 && i == 0 &&c  == '\u2070'){
+                System.out.println("Syntactic: Satuan.isPangkatOnly: keseluruhan string pangkat lebih dari satu dan di awali dengan nol maka salah");
                 return false;
             }
-            if (c == '\u00B2' || c == '\u00B3' || c == '\u2074' || c == '\u2075' || c == '\u2076' || c == '\u2077'
+            else if (c == '\u00B2' || c == '\u00B3' || c == '\u2074' || c == '\u2075' || c == '\u2076' || c == '\u2077'
                     || c == '\u2078' || c == '\u2079'
                     || c == '\u00B9' || c == '\u2070') {
                 continue;
@@ -88,5 +101,5 @@ enum Satuan {
 
 enum Kategori {
     // categorizing it
-    pukul, panjang, luas, berat, volume, jmd, buahan, uang, speed, debit, unknown
+    pukul, panjang, luas, berat, volume, jmd, buahan, uang, speed, debit, suhu, unknown
 }

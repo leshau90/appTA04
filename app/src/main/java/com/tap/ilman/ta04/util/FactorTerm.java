@@ -165,5 +165,4 @@ class FactorTerm extends Term {
 		}
 		return false;
 	}
-
 }

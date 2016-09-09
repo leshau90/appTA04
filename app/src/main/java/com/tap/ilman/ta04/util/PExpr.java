@@ -97,7 +97,7 @@ public class PExpr extends Term {
             b.append("=").append(this.result);
         else
             b.insert(0, "(").append(")").insert(0, this.getStringifiedToken());
-        if (b.substring(0, 1).equals("+") && this.outerExpr == true)
+        if (b.substring(0, 1).equals("+"))
             b.deleteCharAt(0);
         return b.toString();
     }

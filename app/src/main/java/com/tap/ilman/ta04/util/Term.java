@@ -61,28 +61,8 @@ public abstract class Term {
 
 class SimpleTerm extends Term {
 	private float value;
-
-	// private float convValue;
-	// private boolean isConverted;
-
 	private TypedLexeme valueLoc;
 	private Lexeme operatorLoc;
-
-	// public float getConvValue() {
-	// return convValue;
-	// }
-	//
-	// public void setConvValue(float convValue) {
-	// this.convValue = convValue;
-	// }
-	//
-	// public boolean isConverted() {
-	// return isConverted;
-	// }
-	//
-	// public void setConverted(boolean isConverted) {
-	// this.isConverted = isConverted;
-	// }
 
 	public TypedLexeme getValueLoc() {
 		return valueLoc;
@@ -129,7 +109,7 @@ class SimpleTerm extends Term {
 	@Override
 	public String printTree(int spacelvl) {
 		return MantikProcessor.printBranch(spacelvl) + Float.toString(this.value)
-				+ " " + this.getToken().name() + "\n";
+				+ " " + this.getToken().name()+" lexemeValue: "+ this.valueLoc  + "\n";
 	}
 
 	@Override

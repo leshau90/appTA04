@@ -8,22 +8,23 @@ import java.util.Queue;
  */
 public class Analyze {
 
-    public static PExpr[] getKeys(Param ListKunci[]) {
+    public static PExpr[] getKeys(Param ArrayKunci[]) {
         System.out.println("getKeys: getting key from array of key in DetaiSoal");
         int i = 0;
-        PExpr compiledKeys[] = new PExpr[ListKunci.length];
-        while (i < ListKunci.length) {
-            System.out.println("Apputil: getKeys: tobeparsed "+ListKunci[i]);
-            SemanticParam asj = SintakProcessor.startAnalysisPT2(LexUtility.getLex3(ListKunci[i]), ListKunci[i]);
+        PExpr semanticValueofKeys[] = new PExpr[ArrayKunci.length];
+        while (i < ArrayKunci.length) {
+            System.out.println("Analyze.getKeys: Apputil: getKeys: tobeparsed "+ArrayKunci[i]);
+            SemanticParam asj = SintakProcessor.startAnalysisPT2(LexUtility.getLex3(ArrayKunci[i]), ArrayKunci[i]);
             if (asj.isHasilSintakSudahBenar()) {
-                compiledKeys[i] = MantikProcessor.createExpr(asj);
+                System.out.println("Analyze.getKeys:  getting the semantic tree from key number "+i);
+                semanticValueofKeys[i] = MantikProcessor.createExpr(asj);
             } else {
-                System.out.println(" key number " + i + " is wrong please check database");
+                System.out.println("Analyze.getKeys: key number " + i + " is wrong please check database");
             }
             i++;
         }
-        SemanticParam AnalisaSintaktisJawaban = SintakProcessor.startAnalysisPT2(LexUtility.getLex3(ListKunci[1]), ListKunci[1]);
-        return compiledKeys;
+        //SemanticParam AnalisaSintaktisJawaban = SintakProcessor.startAnalysisPT2(LexUtility.getLex3(ArrayKunci[0]), ArrayKunci[0]);
+        return semanticValueofKeys;
     }
 
     public static boolean isItTrue(PExpr[] kunci, PExpr jawaban) {

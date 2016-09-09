@@ -15,7 +15,7 @@ public class LexUtility {
         System.out.print(" \t...checking.." + s);
         for (int i = 0; i < s.length(); i++) {
             if (!Character.isDigit(s.charAt(i))) {
-                System.out.print(" this " + s + " NOT all is digit\n");
+                System.out.print("this " + s + " NOT all is digit\n");
                 return false;
             }
         }
@@ -26,12 +26,12 @@ public class LexUtility {
     private static boolean isAllLetter(String s) {
         System.out.print("\t...checking.." + s);
         for (int i = 0; i < s.length(); i++) {
-            if (isConsideredAsLetter(s.charAt(i))) {
-                System.out.print("this " + s + " NOT all is Letter\n");
+            if (!isConsideredAsLetter(s.charAt(i))) {
+                System.out.print(" isAllLetter: this " + s + " NOT all is Letter\n");
                 return false;
             }
         }
-        System.out.print(s + " ALL is Letter\n");
+        System.out.print(" isAllLetter: " + s + " ALL is Letter\n");
         return true;
     }
 
@@ -47,56 +47,57 @@ public class LexUtility {
 
         int s = 0;
         // int e = 0;
-        Queue<Lexeme> lexTable = new LinkedList<Lexeme>();
-        LinkedList<Lexeme> ll = (LinkedList<Lexeme>) lexTable;
+        LinkedList<Lexeme> lexTable = new LinkedList<Lexeme>();
+        //LinkedList<Lexeme> ll = (LinkedList<Lexeme>) lexTable;
         // StringBuilder temp = new StringBuilder();
 
         for (int i = 0; i < p.input.length(); i++) {
-            System.out.println();
+            System.out.println("lex: lextable.peek() is : " + lexTable.peek());
             char c = p.input.charAt(i);
             // e=i;
-            System.out.println("Token for lexeme: " + "s: " + s + "  i: " + i + " substring: "
+            System.out.println("lex: Token for lexeme: " + "s: " + s + "  i: " + i + " substring: "
                     + p.input.substring(s, i));
-
-            if (c == ':' || c == 'x' || c == '+' || c == '-'
+            //x is x , kali menggunakan unicode \u00D7
+            if (c == ':' || c == '+' || c == '-'
                     || c == '\u00D7'  //unicode kali
+                    || c == 'x'  //x sebagai kali
                     || c == '\u00F7' //bagi
                     || c == '/') {
                 if (i - s > 0) {
-                    System.out.println("ADD "
+                    System.out.println("lex: ADD "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
                 }
-                System.out.println("ADD operator");
+                System.out.println("lex: ADD operator");
                 lexTable.add(new Lexeme(Token.OPERATOR, i));
                 s = i + 1;
             } else if (c == '=') {
                 if (i - s > 0) {
-                    System.out.println("ADD "
+                    System.out.println("lex: ADD "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
                 }
-                System.out.println("ADD equal");
+                System.out.println("lex: ADD equal");
                 lexTable.add(new Lexeme(Token.EQUAL, i));
                 s = i + 1;
             } else if (Character.isWhitespace(c)) {
                 // lexTable.add(new Lexeme(Token.WHITESPACE, e));
                 if (i - s > 0) {
-                    System.out.println("ADD "
+                    System.out.println("lex: ADD "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
 
                 }
-                System.out.println("whitespace, trying to peek "
-                        + ll.peekLast());
-                if (ll.peekLast().getToken() == Token.WHITESPACE) {
-                    System.out.println("...merging.." + ll.peekLast());
-                    ll.getLast().setEnd(i + 1);
+                System.out.println("lex: whitespace, trying to peek "
+                        + lexTable.peek());
+                if (lexTable.peek().getToken() == Token.WHITESPACE) {
+                    System.out.println("lex: ...merging.." + lexTable.peekLast());
+                    lexTable.peek().setEnd(i + 1);
                 } else {
-                    System.out.println(" ADD "
+                    System.out.println("lex:  ADD "
                             + new Lexeme(Token.WHITESPACE, i)
                             + " <---first whitespace ");
                     lexTable.add(new Lexeme(Token.WHITESPACE, i));
@@ -105,45 +106,45 @@ public class LexUtility {
 
             } else if (c == ',') {
                 if (i - s > 0) {
-                    System.out.println("adding "
+                    System.out.println("lex: adding "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
                 }
-                System.out.println("adding comma");
+                System.out.println("lex: adding comma");
                 lexTable.add(new Lexeme(Token.COMMA, i));
                 s = i + 1;
             } else if (c == '.') {
                 if (i - s > 0) {
-                    System.out.println("adding "
+                    System.out.println("lex: adding "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
                 }
 
-                System.out.println("adding dot");
+                System.out.println("lex: adding dot");
                 lexTable.add(new Lexeme(Token.TITIK, i));
                 s = i + 1;
             } else if (c == '(') {
                 if (i - s > 0) {
 
-                    System.out.println("adding "
+                    System.out.println("lex: adding "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
                 }
-                System.out.println("adding kurungbuka");
+                System.out.println("lex: adding kurungbuka");
                 lexTable.add(new Lexeme(Token.KURUNGBUKA, i));
 
                 s = i + 1;
             } else if (c == ')') {
                 if (i - s > 0) {
-                    System.out.println("adding "
+                    System.out.println("lex: adding "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
                 }
-                System.out.println("adding kurungtutup");
+                System.out.println("lex: adding kurungtutup");
                 lexTable.add(new Lexeme(Token.KURUNGTUTUP, i));
                 s = i + 1;
             } else if (Character.isDigit(c)) {
@@ -152,7 +153,7 @@ public class LexUtility {
                         continue;
                     if (!isAllDigit(p.input.substring(s, i))) {
                         System.out
-                                .println("digit, but before me aren't, adding "
+                                .println("lex: digit, but before me aren't, adding "
                                         + isTypeOrOperand(p.input.substring(s, i)));
                         lexTable.add(new Lexeme(isTypeOrOperand(p.input.substring(
                                 s, i)), s, i));
@@ -164,9 +165,10 @@ public class LexUtility {
                 if (i - s > 0) {
                     if (isAllLetter(p.input.substring(s, i)))
                         continue;
-                    if (!isAllLetter(p.input.substring(s, i))) {
+//                    if (!isAllLetter(p.input.substring(s, i))) {
+                    else {
                         System.out
-                                .println("letter, but before me( +" + p.input.substring(s, i) + "+ ) aren't, adding "
+                                .println("lex: letter, but before me( +" + p.input.substring(s, i) + "+ ) aren't, adding "
                                         + isTypeOrOperand(p.input.substring(s, i)));
                         lexTable.add(new Lexeme(isTypeOrOperand(p.input.substring(
                                 s, i)), s, i));
@@ -175,22 +177,22 @@ public class LexUtility {
                 }
             } else {
                 if (i - s > 0) {
-                    System.out.println("adding "
+                    System.out.println("lex: adding "
                             + isTypeOrOperand(p.input.substring(s, i)));
                     lexTable.add(new Lexeme(
                             isTypeOrOperand(p.input.substring(s, i)), s, i));
                 }
-                System.out.println("adding unknown");
+                System.out.println("lex: adding unknown");
                 lexTable.add(new Lexeme(Token.UNKNOWN, i));
                 s = i + 1;
             }
         }
-        System.out.println("OUTSIDE LOOP");
+        System.out.println("lex: OUTSIDE LOOP");
 
         if (p.input.length() - s > 0) {
 
-            System.out.println("adding LAST "
-                    + isTypeOrOperand(p.input.substring(s, p.input.length())));
+//            System.out.println("adding LAST "
+//                    + isTypeOrOperand(p.input.substring(s, p.input.length())));
             lexTable.add(new Lexeme(isTypeOrOperand(p.input.substring(s,
                     p.input.length())), s, p.input.length()));
             // s = 0;
@@ -204,13 +206,13 @@ public class LexUtility {
     static Queue<Lexeme> lexPrinterMerged(Queue<Lexeme> lexTable, Param p) {
         Queue<Lexeme> m = new LinkedList<Lexeme>();
 
-        System.out.println("---LEX--table--for " + p.input);
+        System.out.println("lex: ---LEX--table--for " + p.input);
         int i = 1;
-        System.out.println("size is: " + lexTable.size());
+        System.out.println("lex: size is: " + lexTable.size());
         while (!lexTable.isEmpty()) {
             Lexeme obj = lexTable.remove();
             m.add(obj);
-            System.out.print(i + ") " + obj.getToken() + "\t");
+            System.out.print("lex: " + i + ") " + obj.getToken() + "\t");
 
             if (obj instanceof TypedLexeme) {
                 System.out.println(((TypedLexeme) obj).toString());
@@ -219,7 +221,7 @@ public class LexUtility {
                         + obj.getEnd());
             i++;
         }
-        System.out.println("DONE MERGING LEXEME");
+        System.out.println("lex: DONE MERGING LEXEME");
         return m;
     }
 
@@ -229,7 +231,9 @@ public class LexUtility {
                 || c == '\u2074' || c == '\u2075'
                 || c == '\u2076' || c == '\u2077'
                 || c == '\u2078' || c == '\u2079'
-                || c == '\u00B9' || c == '\u221A') return true;
+                || c == '\u00B9' || c == '\u221A'
+                || c == '\u00B0'/*degree sign*/)
+            return true;
 
         return false;
     }
@@ -240,23 +244,22 @@ public class LexUtility {
 //            , '\u2078', '\u2079'
 //            , '\u00B9'};
 
-    static Queue<Lexeme> lexPrinter2(Queue<Lexeme> lexTable, Param p) {
-        Queue<Lexeme> m = new LinkedList<Lexeme>();
+    static LinkedList<Lexeme> lexPrinter2(LinkedList<Lexeme> lexTable, Param p) {
+        LinkedList<Lexeme> m = new LinkedList<Lexeme>();
 
-        System.out.println("---LEX--table--for " + p.input);
+        System.out.println("lex: ---LEX--table--for " + p.input);
         int i = 1;
         while (!lexTable.isEmpty()) {
             Lexeme obj = lexTable.remove();
             m.add(obj);
-            System.out.print(i + ") " + obj.getToken() + "\t");
+            System.out.print("lex: " + i + ") " + obj.getToken() + "\t");
             System.out
                     .print(p.input.substring(obj.getStart(), obj.getEnd()) + "\t");
-            System.out.println("index: " + obj.getStart() + " to "
+            System.out.println("lex: index: " + obj.getStart() + " to "
                     + obj.getEnd());
             i++;
         }
-        System.out.println("DONE collecting LEXEME");
+        System.out.println("lex: DONE collecting LEXEME");
         return m;
     }
-
 }

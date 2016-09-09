@@ -125,6 +125,11 @@ public class Converter {
             case rp:
             case rupiah:
                 return Kategori.uang;
+            case celcius:
+            case reamur:
+            case fahrenheit:
+            case kelvin:
+                return Kategori.suhu;
             default:
                 return Kategori.unknown;
         }
@@ -144,58 +149,8 @@ public class Converter {
                 return true;
             default:
                 return false;
-
-        }
-
-    }
-
-    public static Satuan getSatuanFromUnicodeString(String s) {
-        switch (s) {
-//            mm2, cm2, dm2, m2, dam2, hm2, km2,
-//
-//                    mm3, cm3, dm3, m3, dam3, hm3, km3
-            case "mm\u00b2":
-                return Satuan.mm2;
-            case "cm\u00b2":
-                return Satuan.cm2;
-            case "dm\u00b2":
-                return Satuan.dm2;
-            case "m\u00b2":
-                return Satuan.m2;
-            case "dam\u00b2":
-                return Satuan.dam2;
-            case "hm\u00b2":
-                return Satuan.hm2;
-            case "km\u00b2":
-                return Satuan.km2;
-
-            case "mm\u00b3":
-                return Satuan.mm3;
-            case "cm\u00b3":
-                return Satuan.cm3;
-            case "dm\u00b3":
-                return Satuan.dm3;
-            case "m\u00b3":
-                return Satuan.m3;
-            case "dam\u00b3":
-                return Satuan.dam3;
-            case "hm\u00b3":
-                return Satuan.hm3;
-            case "km\u00b3":
-                return Satuan.km3;
-
-//            case "\u221a":
-//                return Satuan.akar;
-
-            default:
-                return Satuan.unknown;
         }
     }
-
-//    public static  isOnlyPangkatChar(){
-//
-//
-//    }
 
 
     public static float converse(Kategori k, Satuan m, float val) {

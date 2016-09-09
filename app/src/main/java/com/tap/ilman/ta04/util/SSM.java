@@ -46,13 +46,14 @@ enum SSM {
                         // don't add it yet to queue
                         merged.setTypeLoc(lexeme);
                         return SYNTAX_RP;
+                        //akar
                     } else if (merged.getAkarLoc() == null && p.input.charAt(lexeme.getStart()) == '\u221A') {
                         //akar
                         merged.setAkarLoc(lexeme);
                         return SYNTAX_UNTYPED_OPERAND;
                     } else {
                         SintakProcessor.simpleErrSet(err, lexeme);
-                        err.setMess("ini tidak boleh ditulis diawal");
+                        err.setMess("ini tidak boleh ditulis di awal");
                         return SYNTAX_ERROR;
                     }
                 default:
@@ -429,7 +430,7 @@ enum SSM {
         @Override
         SSM tokenSelanjutnya(Queue<Lexeme> m, Lexeme lexeme, Lexeme lastLexeme, TypedLexeme merged,
                              Param p, int lvl, ErrMes err, Lexeme nextLexeme) {
-            // TODO Auto-generated method stub
+
             // merged[SintakProcessor.iEnd] = lexeme[SintakProcessor.iEnd];
             switch (lexeme.getToken()) {
                 case WHITESPACE:
@@ -501,7 +502,6 @@ enum SSM {
                         merged.setStart(lexeme.getStart());
                         merged.setEnd(lexeme.getEnd());
                         merged.setKategori(Kategori.unknown);
-
                         return SYNTAX_UNTYPED_OPERAND;
                     } else {
                         SintakProcessor.simpleErrSet(err, lexeme);

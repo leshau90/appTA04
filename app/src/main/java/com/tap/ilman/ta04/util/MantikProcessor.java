@@ -7,28 +7,32 @@ import java.util.Queue;
 public class MantikProcessor {
 
     static PExpr[] changeParent(ArrayList<ReferenceItem> DepthTracker,
-                                PExpr midExpr, PExpr innerExpr, Object[] feed) {
+                                PExpr midExpr, PExpr innerExpr, Object[] feed, SemanticParam sp) {
         // every reference is equal at first
 
-        System.out.println("pointer juggling...to change parent: ..."
+        System.out.println("pointer juggling to change parent: feed is "
                 + Arrays.toString(feed));
 
-        // if this is true, there is no need to alter the parent pointer, return
+        // if it is either integer or a typedlexeme, there is no need to alter the parent pointer, return
         // immediately
         if (feed[1] instanceof Integer || feed[1] instanceof TypedLexeme)
             return new PExpr[]{midExpr, innerExpr};
 
-        TokenM bukaAtauTutup = (TokenM) feed[1];
+        //TokenM bukaAtauTutup = (TokenM) feed[1];
+        //the type will be either TokenM or Lexeme, if its lexeme translating it to TokenM
+
+        TokenM bukaAtauTutup = (feed[1]instanceof Lexeme)
+                ?translateToTokenM(sp.getInput().input.charAt(((Lexeme)feed[1]).getStart()))
+                :(TokenM) feed[1];
 
         if (bukaAtauTutup == TokenM.BUKA_KURUNG) {
-            System.out.println("--change parent--");
+            System.out.println("--change parent-new child node");
             TokenM operatorAwal = (TokenM) feed[0];
 
             // add and save appropriate reference
             PExpr p = new PExpr(false);
 
             midExpr.addParenthesizedExpr(p, operatorAwal);
-
             DepthTracker.add(new ReferenceItem().setParentExp(p).setBefore(
                     operatorAwal));
 
@@ -40,7 +44,7 @@ public class MantikProcessor {
         }
 
         if (bukaAtauTutup == TokenM.TUTUP_KURUNG) {
-            System.out.println("--change parent-')'-");
+            System.out.println("--change parent-new parent node");
             TokenM m2 = (TokenM) feed[2];
 
             // prepare the feed, the operator sign is saved in DepthTracker
@@ -49,8 +53,8 @@ public class MantikProcessor {
                     innerExpr, m2};
 
             // after closed parenthesis add this parenthesized Expr based
-            // on appropriate reference to insert it at right pos and depth of
-            // tree hierarchy
+            // on appropriate reference to insert it at the right  depth of
+            // semantic tree hierarchy
 
             // getting current parent (mid) and add the inner as child within
             // mid PExpr
@@ -252,7 +256,7 @@ public class MantikProcessor {
             // only
             // if feed contains open or closed parenthesis
             reference = MantikProcessor.changeParent(DepthTracker, mid, inner,
-                    feed);
+                    feed, sp);
             mid = reference[0];
             inner = reference[1];
             System.out.println("now feed is " + feed[0] + feed[1] + feed[2]);
